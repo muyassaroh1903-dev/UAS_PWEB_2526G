@@ -1,0 +1,102 @@
+<?php
+require_once "koneksi.php";
+
+
+function query($query)
+{
+    global $conn;
+
+    $result = mysqli_query($conn, $query);
+
+    if (!$result) {
+        die("Query Error : " . mysqli_error($conn));
+    }
+
+    $rows = [];
+
+    while ($row = mysqli_fetch_assoc($result)) {
+        $rows[] = $row;
+    }
+
+    return $rows;
+}
+
+
+function cari($keyword)
+{
+    $query = "SELECT * FROM mahasiswa
+                WHERE
+                nim LIKE '%$keyword%' OR
+                nama LIKE '%$keyword%' OR
+                prodi LIKE '%$keyword%' OR
+                angkatan LIKE '%$keyword%' OR
+                jurusan LIKE '%$keyword%' OR
+                email LIKE '%$keyword%' OR
+                alamat LIKE '%$keyword%'
+                ORDER BY id DESC";
+
+    return query($query);
+}
+
+
+function tambah($data)
+{
+    global $conn;
+
+    $nim       = htmlspecialchars($data["nim"]);
+    $nama      = htmlspecialchars($data["nama"]);
+    $prodi     = htmlspecialchars($data["prodi"]);
+    $angkatan  = htmlspecialchars($data["angkatan"]);
+    $jurusan   = htmlspecialchars($data["jurusan"]);
+    $email     = htmlspecialchars($data["email"]);
+    $alamat    = htmlspecialchars($data["alamat"]);
+
+    $query = "INSERT INTO mahasiswa
+            (nim,nama,prodi,angkatan,jurusan,email,alamat)
+            VALUES
+            ('$nim','$nama','$prodi','$angkatan','$jurusan','$email','$alamat')";
+
+    mysqli_query($conn,$query);
+
+    return mysqli_affected_rows($conn);
+}
+
+
+function hapus($id)
+{
+    global $conn;
+
+    mysqli_query($conn,"DELETE FROM mahasiswa WHERE id=$id");
+
+    return mysqli_affected_rows($conn);
+}
+
+
+function ubah($data)
+{
+    global $conn;
+
+    $id        = $data["id"];
+    $nim       = htmlspecialchars($data["nim"]);
+    $nama      = htmlspecialchars($data["nama"]);
+    $prodi     = htmlspecialchars($data["prodi"]);
+    $angkatan  = htmlspecialchars($data["angkatan"]);
+    $jurusan   = htmlspecialchars($data["jurusan"]);
+    $email     = htmlspecialchars($data["email"]);
+    $alamat    = htmlspecialchars($data["alamat"]);
+
+    $query = "UPDATE mahasiswa SET
+                nim='$nim',
+                nama='$nama',
+                prodi='$prodi',
+                angkatan='$angkatan',
+                jurusan='$jurusan',
+                email='$email',
+                alamat='$alamat'
+            WHERE id=$id";
+
+    mysqli_query($conn,$query);
+
+    return mysqli_affected_rows($conn);
+}
+?>
